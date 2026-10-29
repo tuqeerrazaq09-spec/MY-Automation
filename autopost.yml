@@ -1,0 +1,68 @@
+name: Social Autopost
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # every 30 minutes (GitHub may delay runs by a few minutes)
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "post = publish due posts, dry-run = preview only, check = test connections"
+        type: choice
+        options: [post, dry-run, check]
+        default: post
+
+permissions:
+  contents: write   # lets the bot save post status back to content_calendar.csv
+
+concurrency:
+  group: autopost
+  cancel-in-progress: false
+
+jobs:
+  autopost:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Run poster
+        env:
+          TIMEZONE: ${{ vars.TIMEZONE || 'Asia/Karachi' }}
+          # Facebook + Instagram (Meta)
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_ACCESS_TOKEN: ${{ secrets.FB_PAGE_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          # LinkedIn
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_AUTHOR_URN: ${{ secrets.LINKEDIN_AUTHOR_URN }}
+          # X
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          # Pinterest
+          PINTEREST_ACCESS_TOKEN: ${{ secrets.PINTEREST_ACCESS_TOKEN }}
+          PINTEREST_REFRESH_TOKEN: ${{ secrets.PINTEREST_REFRESH_TOKEN }}
+          PINTEREST_APP_ID: ${{ secrets.PINTEREST_APP_ID }}
+          PINTEREST_APP_SECRET: ${{ secrets.PINTEREST_APP_SECRET }}
+          PINTEREST_BOARD_ID: ${{ secrets.PINTEREST_BOARD_ID }}
+          PINTEREST_API_BASE: ${{ vars.PINTEREST_API_BASE }}
+        run: python poster.py --mode "${{ inputs.mode || 'post' }}"
+
+      - name: Save post status
+        if: ${{ always() && (inputs.mode || 'post') == 'post' }}
+        run: |
+          git config user.name "autopost-bot"
+          git config user.email "autopost-bot@users.noreply.github.com"
+          git add content_calendar.csv
+          if ! git diff --cached --quiet; then
+            git commit -m "Update post status [skip ci]"
+            git push
+          fi
