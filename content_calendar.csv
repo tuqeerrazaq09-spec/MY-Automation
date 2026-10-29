@@ -1,4 +1,4 @@
 id,publish_at,platforms,caption,link,image,x_text,pinterest_title,pinterest_board_id,status,done,errors,attempts,posted_at
-1,2026-10-29 10:00,all,"Sample post: a strong SEO audit finds what is holding your site back. #SEO #DigitalMarketing",https://example.com/seo-audit,sample.jpg,,SEO audit checklist,,pending,,,,
-2,2026-10-29 15:00,"facebook,linkedin,x","Text-only sample post. Instagram and Pinterest are left out because they need an image.",https://example.com,,,,,pending,,,,
-3,2026-10-30 11:30,"instagram,pinterest,facebook","Image-only sample. Edit or delete these rows and add your own.",,sample.jpg,,Sample pin title,,pending,,,,
+1,2026-10-29 10:00,all,Sample post: a strong SEO audit finds what is holding your site back. #SEO #DigitalMarketing,https://example.com/seo-audit,sample.jpg,,SEO audit checklist,,posted,facebook=skipped;instagram=skipped;linkedin=skipped;x=skipped;pinterest=skipped,,1,2026-10-29 15:46
+2,2026-10-29 15:00,"facebook,linkedin,x",Text-only sample post. Instagram and Pinterest are left out because they need an image.,https://example.com,,,,,posted,facebook=skipped;linkedin=skipped;x=skipped,,1,2026-10-29 15:46
+3,2026-10-30 11:30,"instagram,pinterest,facebook",Image-only sample. Edit or delete these rows and add your own.,,sample.jpg,,Sample pin title,,pending,,,,
